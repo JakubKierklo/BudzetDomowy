@@ -1,0 +1,46 @@
+<div class="filtr">
+    <label>
+        Rok
+        <input type="number" value="@Rok" @onchange="ZmienRokAsync" />
+    </label>
+    <label>
+        Miesiąc
+        <select @onchange="ZmienMiesiacAsync">
+            @for (var m = 1; m <= 12; m++)
+            {
+                var numer = m;
+                <option value="@numer" selected="@(numer == Miesiac)">@NazwyMiesiecy[numer - 1]</option>
+            }
+        </select>
+    </label>
+</div>
+
+@code {
+    private static readonly string[] NazwyMiesiecy =
+        ["styczeń", "luty", "marzec", "kwiecień", "maj", "czerwiec",
+         "lipiec", "sierpień", "wrzesień", "październik", "listopad", "grudzień"];
+
+    [Parameter] public int Rok { get; set; }
+    [Parameter] public EventCallback<int> RokChanged { get; set; }
+    [Parameter] public int Miesiac { get; set; }
+    [Parameter] public EventCallback<int> MiesiacChanged { get; set; }
+    [Parameter] public EventCallback OnZmiana { get; set; }
+
+    private async Task ZmienRokAsync(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var rok))
+        {
+            await RokChanged.InvokeAsync(rok);
+            await OnZmiana.InvokeAsync();
+        }
+    }
+
+    private async Task ZmienMiesiacAsync(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var miesiac))
+        {
+            await MiesiacChanged.InvokeAsync(miesiac);
+            await OnZmiana.InvokeAsync();
+        }
+    }
+}

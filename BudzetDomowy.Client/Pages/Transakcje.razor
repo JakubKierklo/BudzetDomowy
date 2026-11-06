@@ -1,0 +1,129 @@
+@page "/transakcje"
+@using BudzetDomowy.Client.Components
+@inject HttpClient Http
+
+<PageTitle>Transakcje</PageTitle>
+
+<h1>Transakcje</h1>
+
+<WyborMiesiaca @bind-Rok="_rok" @bind-Miesiac="_miesiac" OnZmiana="ZaladujAsync" />
+
+<h2>Dodaj transakcję</h2>
+
+<EditForm Model="_nowa" OnValidSubmit="DodajAsync" class="formularz">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="pole">
+        <label>Data <InputDate @bind-Value="_nowa.Data" /></label>
+    </div>
+    <div class="pole">
+        <label>Kwota <InputNumber @bind-Value="_nowa.Kwota" /></label>
+    </div>
+    <div class="pole">
+        <label>Opis <InputText @bind-Value="_nowa.Opis" /></label>
+    </div>
+    <div class="pole">
+        <label>
+            Kategoria
+            <InputSelect @bind-Value="_nowa.KategoriaId">
+                <option value="0">-- wybierz --</option>
+                @foreach (var kategoria in _kategorie)
+                {
+                    <option value="@kategoria.Id">
+                        @kategoria.Nazwa (@(kategoria.Typ == TypTransakcji.Przychod ? "przychód" : "wydatek"))
+                    </option>
+                }
+            </InputSelect>
+        </label>
+    </div>
+
+    <button type="submit">Dodaj</button>
+</EditForm>
+
+@if (_blad is not null)
+{
+    <p class="blad">@_blad</p>
+}
+
+<h2>Lista transakcji</h2>
+
+@if (_transakcje is null)
+{
+    <p>Ładowanie…</p>
+}
+else if (_transakcje.Count == 0)
+{
+    <p>Brak transakcji w tym miesiącu.</p>
+}
+else
+{
+    <table class="tabela">
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Opis</th>
+                <th>Kategoria</th>
+                <th>Kwota</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var transakcja in _transakcje)
+            {
+                <tr class="@(transakcja.Typ == TypTransakcji.Przychod ? "przychod" : "wydatek")">
+                    <td>@transakcja.Data.ToString("dd.MM.yyyy")</td>
+                    <td>@transakcja.Opis</td>
+                    <td>@transakcja.NazwaKategorii</td>
+                    <td>@(transakcja.Typ == TypTransakcji.Wydatek ? "-" : "+") @transakcja.Kwota.ToString("C2")</td>
+                    <td><button class="usun" @onclick="() => UsunAsync(transakcja.Id)">Usuń</button></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private int _rok = DateTime.Today.Year;
+    private int _miesiac = DateTime.Today.Month;
+    private List<KategoriaDto> _kategorie = new();
+    private List<TransakcjaDto>? _transakcje;
+    private TransakcjaZapisDto _nowa = new();
+    private string? _blad;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _kategorie = await Http.GetFromJsonAsync<List<KategoriaDto>>("api/kategorie") ?? new();
+        await ZaladujAsync();
+    }
+
+    private async Task ZaladujAsync()
+    {
+        _transakcje = await Http.GetFromJsonAsync<List<TransakcjaDto>>($"api/transakcje?rok={_rok}&miesiac={_miesiac}");
+    }
+
+    private async Task DodajAsync()
+    {
+        _blad = null;
+
+        var odpowiedz = await Http.PostAsJsonAsync("api/transakcje", _nowa);
+        if (!odpowiedz.IsSuccessStatusCode)
+        {
+            _blad = $"Nie udało się dodać transakcji (kod {(int)odpowiedz.StatusCode}).";
+            return;
+        }
+
+        // Przełączamy widok na miesiąc dodanej transakcji, żeby była od razu widoczna.
+        _rok = _nowa.Data.Year;
+        _miesiac = _nowa.Data.Month;
+        _nowa = new TransakcjaZapisDto { Data = _nowa.Data };
+
+        await ZaladujAsync();
+    }
+
+    private async Task UsunAsync(int id)
+    {
+        await Http.DeleteAsync($"api/transakcje/{id}");
+        await ZaladujAsync();
+    }
+}

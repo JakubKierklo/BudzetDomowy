@@ -1,0 +1,187 @@
+body {
+    font-family: "Segoe UI", Roboto, Arial, sans-serif;
+    margin: 0;
+    background: #f4f6f8;
+    color: #1f2933;
+}
+
+.uklad {
+    display: flex;
+    min-height: 100vh;
+}
+
+.menu {
+    width: 220px;
+    background: #1f3a5f;
+    color: white;
+    padding: 1.5rem 1rem;
+}
+
+    .menu h2 {
+        font-size: 1.3rem;
+        margin-top: 0;
+    }
+
+    .menu a {
+        display: block;
+        color: #cfe0f5;
+        text-decoration: none;
+        padding: 0.6rem 0.75rem;
+        border-radius: 6px;
+        margin-bottom: 0.25rem;
+    }
+
+        .menu a.active,
+        .menu a:hover {
+            background: #2d5282;
+            color: white;
+        }
+
+main {
+    flex: 1;
+    padding: 1.5rem 2rem;
+    max-width: 960px;
+}
+
+.filtr {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+    .filtr input,
+    .filtr select {
+        margin-left: 0.5rem;
+        padding: 0.3rem;
+    }
+
+.karty {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.karta {
+    background: white;
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    border-left: 6px solid #64748b;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+    .karta span {
+        display: block;
+        font-size: 0.9rem;
+        color: #64748b;
+    }
+
+    .karta strong {
+        font-size: 1.5rem;
+    }
+
+    .karta.przychod {
+        border-left-color: #16a34a;
+    }
+
+    .karta.wydatek {
+        border-left-color: #dc2626;
+    }
+
+    .karta.saldo {
+        border-left-color: #2563eb;
+    }
+
+.pasek-wiersz {
+    display: grid;
+    grid-template-columns: 160px 1fr 120px;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.6rem;
+}
+
+.pasek {
+    background: #e2e8f0;
+    border-radius: 6px;
+    height: 16px;
+    overflow: hidden;
+}
+
+.wypelnienie {
+    background: #dc2626;
+    height: 100%;
+}
+
+.kwota {
+    text-align: right;
+}
+
+.formularz {
+    background: white;
+    padding: 1rem 1.25rem;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    max-width: 520px;
+}
+
+.pole {
+    margin-bottom: 0.75rem;
+}
+
+    .pole label {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+    }
+
+    .pole input,
+    .pole select {
+        padding: 0.4rem;
+    }
+
+button {
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+    button.usun {
+        background: #e2e8f0;
+        color: #1f2933;
+        padding: 0.25rem 0.6rem;
+    }
+
+.tabela {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+    .tabela th,
+    .tabela td {
+        padding: 0.6rem 0.75rem;
+        text-align: left;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .tabela tr.przychod td:nth-child(4) {
+        color: #16a34a;
+    }
+
+    .tabela tr.wydatek td:nth-child(4) {
+        color: #dc2626;
+    }
+
+.blad {
+    color: #dc2626;
+}
+
+.validation-message {
+    color: #dc2626;
+}

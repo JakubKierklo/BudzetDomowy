@@ -1,0 +1,6 @@
+@BudzetDomowy.Server_HostAddress = http://localhost:5135
+
+GET {{BudzetDomowy.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

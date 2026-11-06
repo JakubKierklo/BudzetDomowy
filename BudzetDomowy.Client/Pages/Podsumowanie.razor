@@ -1,0 +1,67 @@
+@page "/"
+@using System.Globalization
+@using BudzetDomowy.Client.Components
+@inject HttpClient Http
+
+<PageTitle>Podsumowanie</PageTitle>
+
+<h1>Podsumowanie miesiąca</h1>
+
+<WyborMiesiaca @bind-Rok="_rok" @bind-Miesiac="_miesiac" OnZmiana="ZaladujAsync" />
+
+@if (_dane is null)
+{
+    <p>Ładowanie…</p>
+}
+else
+{
+    <div class="karty">
+        <div class="karta przychod">
+            <span>Przychody</span>
+            <strong>@_dane.Przychody.ToString("C2")</strong>
+        </div>
+        <div class="karta wydatek">
+            <span>Wydatki</span>
+            <strong>@_dane.Wydatki.ToString("C2")</strong>
+        </div>
+        <div class="karta @(_dane.Saldo < 0 ? "wydatek" : "saldo")">
+            <span>Saldo</span>
+            <strong>@_dane.Saldo.ToString("C2")</strong>
+        </div>
+    </div>
+
+    <h2>Wydatki wg kategorii</h2>
+
+    @if (_dane.WydatkiWgKategorii.Count == 0)
+    {
+        <p>Brak wydatków w tym miesiącu.</p>
+    }
+    else
+    {
+        @foreach (var kategoria in _dane.WydatkiWgKategorii)
+        {
+            var procent = _dane.Wydatki == 0 ? 0 : (double)(kategoria.Suma / _dane.Wydatki) * 100;
+
+            <div class="pasek-wiersz">
+                <span class="nazwa">@kategoria.Nazwa</span>
+                <div class="pasek">
+                    <div class="wypelnienie" style="width: @procent.ToString(CultureInfo.InvariantCulture)%"></div>
+                </div>
+                <span class="kwota">@kategoria.Suma.ToString("C2")</span>
+            </div>
+        }
+    }
+}
+
+@code {
+    private int _rok = DateTime.Today.Year;
+    private int _miesiac = DateTime.Today.Month;
+    private PodsumowanieMiesiacaDto? _dane;
+
+    protected override async Task OnInitializedAsync() => await ZaladujAsync();
+
+    private async Task ZaladujAsync()
+    {
+        _dane = await Http.GetFromJsonAsync<PodsumowanieMiesiacaDto>($"api/podsumowanie?rok={_rok}&miesiac={_miesiac}");
+    }
+}
