@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace BudzetDomowy.Server.Controllers;
-//test
+//test12
 [ApiController]
 [Route("api/[controller]")]
 public class KategorieController(BudzetDbContext db) : ControllerBase
